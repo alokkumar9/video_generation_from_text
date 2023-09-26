@@ -7,7 +7,7 @@ import gradio as gr
 
 #pipe = DiffusionPipeline.from_pretrained("cerspense/zeroscope_v2_576w", torch_dtype=torch.float16)
 pipe1 = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16")
-pipe1.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+pipe1.scheduler = DPMSolverMultistepScheduler.from_config(pipe1.scheduler.config)
 
 pipe1.enable_model_cpu_offload()
 #pipe1.unet.enable_forward_chunking(chunk_size=1, dim=1)
