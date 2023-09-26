@@ -4,21 +4,28 @@ from diffusers import TextToVideoSDPipeline
 from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 from diffusers.utils import export_to_video
 from PIL import Image
+import spacy
 import gradio as gr
+nlp=spacy.load('en_core_web_sm')
 
 #loading diffusion model
 pipe1 = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16")
-pipe1.scheduler = DPMSolverMultistepScheduler.from_config(pipe1.scheduler.config)
+
 
 pipe1.enable_model_cpu_offload()
 pipe1.enable_vae_slicing()
 
 
 def generate_video(description):
+  pipe1.scheduler = DPMSolverMultistepScheduler.from_config(pipe1.scheduler.config)
   if description:
     video_description = description
-    video_frames = pipe1(video_description, num_inference_steps=25).frames
+    # num_frames can be changed to conrol length of video. If set higher than 60, GPU runtime may fail.
+    video_frames = pipe1(video_description, num_inference_steps=25, num_frames=30).frames
     video_path = export_to_video(video_frames)
+    
+    pipe1.enable_vae_slicing()
+        
     return video_path
   else:
     gr.Warning("Please enter video description first")
